@@ -6,8 +6,6 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ 'jetty-10.[1-9]?[0-9].x', 'jetty-11.[1-9]?[0-9].x', 'jetty-12.[1-9]?[0-9].x' ]
-  schedule:
-    - cron: '22 1 * * 2'
 
 permissions:
   contents: read
@@ -15,7 +13,7 @@ permissions:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       actions: read
       contents: read

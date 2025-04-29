@@ -35,6 +35,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -97,6 +100,8 @@ public class ThreadLimitHandlerTest
         last.set(null);
         _local.getResponse("GET / HTTP/1.0\r\nForwarded: for=1.2.3.4\r\n\r\n");
         assertThat(last.get(), Matchers.is("0.0.0.0"));
+
+        await().atMost(5, TimeUnit.SECONDS).until(handler::getRemoteCount, is(0));
     }
 
     @Test
@@ -130,6 +135,8 @@ public class ThreadLimitHandlerTest
         last.set(null);
         _local.getResponse("GET / HTTP/1.0\r\nX-Forwarded-For: 1.1.1.1\r\nX-Forwarded-For: 6.6.6.6,1.2.3.4\r\nForwarded: for=1.2.3.4\r\n\r\n");
         assertThat(last.get(), Matchers.is("1.2.3.4"));
+
+        await().atMost(5, TimeUnit.SECONDS).until(handler::getRemoteCount, is(0));
     }
 
     @Test
@@ -163,6 +170,8 @@ public class ThreadLimitHandlerTest
         last.set(null);
         _local.getResponse("GET / HTTP/1.0\r\nX-Forwarded-For: 1.1.1.1\r\nForwarded: for=6.6.6.6; for=1.2.3.4\r\nX-Forwarded-For: 6.6.6.6\r\nForwarded: proto=https\r\n\r\n");
         assertThat(last.get(), Matchers.is("1.2.3.4"));
+
+        await().atMost(5, TimeUnit.SECONDS).until(handler::getRemoteCount, is(0));
     }
 
     @Test
@@ -237,5 +246,7 @@ public class ThreadLimitHandlerTest
             Thread.sleep(10);
         }
         assertThat(count.get(), is(0));
+
+        await().atMost(5, TimeUnit.SECONDS).until(handler::getRemoteCount, is(0));
     }
 }
